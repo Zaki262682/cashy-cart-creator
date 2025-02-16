@@ -5,7 +5,7 @@ import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ShoppingCart, Plus } from "lucide-react";
+import { ShoppingCart, Plus, List } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -81,6 +81,22 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground mt-1">
                   {product.description}
                 </p>
+                {product.ingredients && product.ingredients.length > 0 && (
+                  <div className="mt-3">
+                    <h4 className="text-sm font-medium flex items-center gap-1">
+                      <List className="h-4 w-4" />
+                      Ingredients
+                    </h4>
+                    <ul className="mt-1 text-sm text-muted-foreground">
+                      {product.ingredients.map((ingredient, index) => (
+                        <li key={index} className="inline-block">
+                          {ingredient}
+                          {index < product.ingredients!.length - 1 ? ', ' : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <div className="flex items-center justify-between mt-4">
                   <span className="text-lg font-medium">
                     ${product.price.toFixed(2)}
