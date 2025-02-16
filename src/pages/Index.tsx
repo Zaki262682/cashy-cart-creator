@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { products } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,18 @@ import { ShoppingCart, Plus, List } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { addItem, items } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Parse category from URL parameters
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const category = params.get('category');
+    if (category) {
+      setSelectedCategory(category);
+    }
+  }, [location]);
 
   const categories = Array.from(
     new Set(products.map((product) => product.category))
@@ -48,7 +58,10 @@ const Index = () => {
         <div className="flex gap-4 mb-8 overflow-x-auto pb-4">
           <Button
             variant={selectedCategory === null ? "default" : "outline"}
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => {
+              setSelectedCategory(null);
+              navigate("/");
+            }}
             className="animate-fadeIn"
           >
             All
@@ -57,7 +70,10 @@ const Index = () => {
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "outline"}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => {
+                setSelectedCategory(category);
+                navigate(`/?category=${category}`);
+              }}
               className="animate-fadeIn"
             >
               {category}

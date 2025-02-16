@@ -10,6 +10,7 @@ import { Footer } from "@/components/Footer";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Checkout from "./pages/Checkout";
+import Categories from "./pages/Categories";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/categories" element={<Categories />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
