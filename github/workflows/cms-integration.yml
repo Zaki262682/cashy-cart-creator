@@ -1,0 +1,33 @@
+name: CMS Integration
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  setup-strapi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14' # or any compatible version with Strapi
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Strapi
+        run: npx create-strapi-app cms --quickstart
+
+      - name: Commit Strapi setup
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m 'Set up Strapi CMS'
+          git push
