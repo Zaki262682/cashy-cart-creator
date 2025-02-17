@@ -9,6 +9,7 @@ backend:
     uploadMedia: "[skip ci] Upload "{{path}}""
     deleteMedia: "[skip ci] Delete "{{path}}""
 
+local_backend: true
 media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 publish_mode: editorial_workflow
