@@ -1,4 +1,5 @@
-name: CMS Integration
+
+name: Strapi CMS Integration
 
 on:
   push:
@@ -16,18 +17,76 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '14' # or any compatible version with Strapi
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Install Strapi
-        run: npx create-strapi-app cms --quickstart
+      - name: Create Strapi project
+        run: npx create-strapi-app@latest cms --quickstart --no-run
+
+      - name: Install Strapi dependencies
+        working-directory: ./cms
+        run: npm install
+
+      - name: Build Strapi admin
+        working-directory: ./cms
+        run: npm run build
+
+      - name: Create content types
+        working-directory: ./cms
+        run: |
+          cat > ./src/api/product/content-types/product/schema.json << EOL
+          {
+            "kind": "collectionType",
+            "collectionName": "products",
+            "info": {
+              "singularName": "product",
+              "pluralName": "products",
+              "displayName": "Product"
+            },
+            "options": {
+              "draftAndPublish": true
+            },
+            "attributes": {
+              "name": {
+                "type": "string",
+                "required": true
+              },
+              "price": {
+                "type": "decimal",
+                "required": true
+              },
+              "description": {
+                "type": "text"
+              },
+              "image": {
+                "type": "media",
+                "multiple": false,
+                "required": true
+              },
+              "category": {
+                "type": "string",
+                "required": true
+              },
+              "ingredients": {
+                "type": "json"
+              }
+            }
+          }
+          EOL
+
+      - name: Start Strapi
+        working-directory: ./cms
+        run: npm run develop &
+
+      - name: Wait for Strapi to start
+        run: sleep 30
 
       - name: Commit Strapi setup
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
-          git commit -m 'Set up Strapi CMS'
+          git commit -m 'Set up Strapi CMS with Product content type'
           git push

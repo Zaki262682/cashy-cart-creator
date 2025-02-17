@@ -1,24 +1,44 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { products } from "@/data/products";
+import { products, fetchProducts } from "@/data/products";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ShoppingCart, Plus } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Product } from "@/types/product";
 
 const Index = () => {
   const navigate = useNavigate();
   const { addItem, items } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [loadedProducts, setLoadedProducts] = useState<Product[]>(products);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const fetchedProducts = await fetchProducts();
+        setLoadedProducts(fetchedProducts);
+      } catch (error) {
+        toast({
+          title: "Error loading products",
+          description: "Using fallback product data",
+          variant: "destructive",
+        });
+      }
+    };
+    
+    loadProducts();
+  }, [toast]);
 
   const categories = Array.from(
-    new Set(products.map((product) => product.category))
+    new Set(loadedProducts.map((product) => product.category))
   );
 
   const filteredProducts = selectedCategory
-    ? products.filter((product) => product.category === selectedCategory)
-    : products;
+    ? loadedProducts.filter((product) => product.category === selectedCategory)
+    : loadedProducts;
 
   return (
     <div className="min-h-screen bg-background">
